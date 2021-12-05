@@ -12,51 +12,46 @@ function solution(input) {
 function isDiagonal(r) {
     return r.start.y != r.end.y && r.start.x != r.end.x;
 }
+
+function isStill(r) {
+    return r.start.x == r.end.x && r.start.y == r.end.y;
+}
+
+function isHorizontal(r) {
+    return r.start.y === r.end.y && r.start.x != r.end.x;
+}
+
+function isVertical(r) {
+    return r.start.x === r.end.x && r.start.y != r.end.y;
+}
+
 function traceRoute(r, nodes) {
     let start;
     let end
-    if (r.start.y != r.end.y && r.start.x != r.end.x) {
-        if (r.start.x < r.end.x) {
-            start = r.start;
-            end = r.end;
-        } else {
-            start = r.end;
-            end = r.start;
-        }
+    if (isDiagonal(r) || isHorizontal(r)) {
+        start = r.start.x < r.end.x ? r.start : r.end;
+        end = r.start.x < r.end.x ? r.end : r.start;
     }
-    if (r.start.y === r.end.y) {
-        if (r.start.x > r.end.x) {
-            start = r.end;
-            end = r.start;
-        } else {
-            start = r.start;
-            end = r.end;
-        }
+    if (isVertical(r)) {
+        start = r.start.y > r.end.y ? r.end : r.start;
+        end = r.start.y > r.end.y ? r.start : r.end;
     }
-    if (r.start.x === r.end.x) {
-        if (r.start.y > r.end.y) {
-            start = r.end;
-            end = r.start;
-        } else {
-            start = r.start;
-            end = r.end;
-        }
-    }
-    if (start.x == end.x && start.y == end.y) {
-        addNode(nodes, start);
-        return;
-    }
-    if (start.x != end.x && start.y != end.y) {
-        if (start.y < end.y) {
-            for (let i = 0; i <= end.x - start.x; i++) addNode(nodes, { x: start.x + i, y: start.y + i })
-        } else {
-            for (let i = 0; i <= end.x - start.x; i++) addNode(nodes, { x: start.x + i, y: start.y - i })
+    if (isStill(r)) return addNode(nodes, r.start);
+
+    if (isDiagonal(r)) {
+        for (let i = 0; i <= end.x - start.x; i++) {
+            const position = {};
+            position.x = start.x + i;
+            position.y = (start.y < end.y) ? start.y + i : start.y - i;
+            addNode(nodes, position);
         }
         return;
     }
-    if (end.x > start.x) {
+
+    if (isHorizontal(r)) {
         for (let i = start.x; i <= end.x; i++) addNode(nodes, { x: i, y: start.y })
-    } else {
+    }
+    if (isVertical(r)) {
         for (let i = start.y; i <= end.y; i++) addNode(nodes, { x: start.x, y: i })
     }
 }
